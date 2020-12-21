@@ -1,0 +1,8 @@
+# vscode realted
+.vscode
+
+# python related
+__pycache__
+
+# project realted
+test.py
