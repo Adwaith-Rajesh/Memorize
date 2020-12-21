@@ -1,4 +1,6 @@
 from tkinter import *
+from typing import List
+from typing import Tuple
 
 import pyglet
 from PIL import Image, ImageTk
@@ -23,6 +25,9 @@ class Memorize(Tk):
         # same as the file names for the images
         self.button_titles = get_file_names_of_pics("./assets",
                                                     avoid=["crown.png"]) * 2
+
+        self.pressed_buttons: List[Tuple[int, int]] = []
+        self.latest_button: str = ""
 
         self.first_button_pressed: bool = False
         self.setup_ui()
@@ -80,14 +85,38 @@ class Memorize(Tk):
         # verify the selection
     def button_pressed(self, obj: Button, title: str, row: int,
                        col: int) -> None:
-        print(obj, title, row, col)
-        image = Image.open(f"./assets/{title}")
-        image = image.resize((100, 100), Image.ANTIALIAS)
-        image = ImageTk.PhotoImage(image)
-        obj.config(image=image)
-        obj.image = image
-        if not self.first_button_pressed:
-            self.first_button_pressed = False
+
+        if (row, col) not in self.pressed_buttons:
+            print(row, col)
+            self.add_new_button_info((row, col))
+
+            image = Image.open(f"./assets/{title}")
+            image = image.resize((100, 100), Image.ANTIALIAS)
+            image = ImageTk.PhotoImage(image)
+            obj.config(image=image)
+            obj.image = image
+
+            if not self.first_button_pressed:
+                print("False If")
+                self.first_button_pressed = True
+                self.latest_button = title
+
+            elif self.first_button_pressed:
+                self.first_button_pressed = False
+                if title == self.latest_button:
+                    print("got it")
+
+    def add_new_button_info(self, row_col: Tuple[int, int]):
+        if not row_col in self.pressed_buttons:
+            self.pressed_buttons.append(row_col)
+
+    def change_to_default_image(self, obj: Button) -> None:
+        d_img = Image.open("./assets/crown.png")
+        d_img = d_img.resize((100, 100), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(d_img)
+
+        obj.config(image=img)
+        ogj.image = img
 
 
 if __name__ == "__main__":
