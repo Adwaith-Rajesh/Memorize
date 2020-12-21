@@ -1,3 +1,4 @@
+import time
 from tkinter import *
 from typing import List
 from typing import Tuple
@@ -27,7 +28,8 @@ class Memorize(Tk):
                                                     avoid=["crown.png"]) * 2
 
         self.pressed_buttons: List[Tuple[int, int]] = []
-        self.latest_button: str = ""
+        self.answers: List[Tuple[int, int]] = []
+        self.latest_button: Tuple[str, Button] = None
 
         self.first_button_pressed: bool = False
         self.setup_ui()
@@ -64,10 +66,9 @@ class Memorize(Tk):
         for btn in self.buttons:
             btn.grid(row=row_count, column=col_count, padx=3, pady=3)
             text = get_my_name(self.button_titles)
-            btn.config(command=lambda text=text, row_count=row_count, col_count
-                       =col_count, obj=btn, : self.button_pressed(
-                           obj, text, row_count, col_count),
-                       text=text)
+            btn.config(command=lambda text=text, row_count=row_count, col_count=col_count, obj=btn, : self.button_pressed(
+                obj, text, row_count, col_count),
+                text=text)
 
             col_count += 1
             if col_count == self.row_col[1]:
@@ -82,12 +83,12 @@ class Memorize(Tk):
             btn.config(image=image)
             btn.image = image
 
-        # verify the selection
+    # verify the selection
     def button_pressed(self, obj: Button, title: str, row: int,
                        col: int) -> None:
 
-        if (row, col) not in self.pressed_buttons:
-            print(row, col)
+        if (row, col) not in self.pressed_buttons and (row, col) not in self.answers:
+            print(title)
             self.add_new_button_info((row, col))
 
             image = Image.open(f"./assets/{title}")
@@ -99,24 +100,36 @@ class Memorize(Tk):
             if not self.first_button_pressed:
                 print("False If")
                 self.first_button_pressed = True
-                self.latest_button = title
+                self.latest_button = (title, obj)
 
             elif self.first_button_pressed:
                 self.first_button_pressed = False
-                if title == self.latest_button:
+                if title == self.latest_button[0]:
+                    self.answers.append((row, col))
+                    # Must be to increase the score or something
                     print("got it")
+
+                else:
+
+                    def change():
+                        self.change_to_default_image(obj)
+                        self.change_to_default_image(self.latest_button[1])
+                        self.pressed_buttons.clear()
+
+                    self.after(100, change)
 
     def add_new_button_info(self, row_col: Tuple[int, int]):
         if not row_col in self.pressed_buttons:
             self.pressed_buttons.append(row_col)
 
     def change_to_default_image(self, obj: Button) -> None:
+        time.sleep(0.5)
         d_img = Image.open("./assets/crown.png")
         d_img = d_img.resize((100, 100), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(d_img)
 
         obj.config(image=img)
-        ogj.image = img
+        obj.image = img
 
 
 if __name__ == "__main__":
