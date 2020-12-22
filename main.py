@@ -12,6 +12,10 @@ from logic import get_my_name
 pyglet.font.add_file("font/langar.ttf")
 
 
+FOLDER = "./assets"  # Path to the folder
+DEFAULT_IMAGE = "crown.png"  # The name of the image in the given folder
+
+
 class Memorize(Tk):
     def __init__(self) -> None:
         super(Memorize, self).__init__()
@@ -24,13 +28,15 @@ class Memorize(Tk):
         self.resizable(False, False)
 
         # same as the file names for the images
-        self.button_titles = get_file_names_of_pics("./assets",
-                                                    avoid=["crown.png"]) * 2
+        self.button_titles = get_file_names_of_pics(FOLDER,
+                                                    avoid=[DEFAULT_IMAGE]) * 2
 
         self.pressed_buttons: List[Tuple[int, int]] = []
         self.answers: List[Tuple[int, int]] = []
-        self.latest_button: Tuple[str, Button] = None
+        self.latest_button: Tuple[str, Button, Tuple[int, int]] = None
 
+        self.tries = 0
+        self.score = 0
         self.first_button_pressed: bool = False
         self.setup_ui()
 
@@ -55,11 +61,27 @@ class Memorize(Tk):
                                  bg="#73b504")
         self.title_label.grid(row=0, column=0)
 
+        # The tries label
+        self.tries_label = Label(self.title_frame, text=f"Tries: {self.tries}",
+                                 font=("langar", 14),  bg="#73b504", padx=(30,))
+        self.tries_label.grid(row=0, column=1)
+
+        # The total score label
+        self.score_label = Label(self.title_frame, text=f"Score: {self.score}",
+                                 font=("langar", 14), padx=(80,), bg="#73b504")
+        self.score_label.grid(row=0, column=2)
+
+        self.generate_button()
+
+    def generate_button(self):
         # generate all the 20 buttons
         for _ in range(20):
             btn = Button(self.board_frame, text="title")
             self.buttons.append(btn)
 
+        self.arrange_buttons()
+
+    def arrange_buttons(self):
         # arrange all the buttons
         row_count = 0
         col_count = 0
@@ -75,8 +97,11 @@ class Memorize(Tk):
                 col_count = 0
                 row_count += 1
 
-        # add the default image image
-        img = Image.open("assets/crown.png")
+        self.set_default_image()
+
+    def set_default_image(self):
+        # add the default image
+        img = Image.open(f"{FOLDER}/{DEFAULT_IMAGE}")
         img = img.resize((100, 100), Image.ANTIALIAS)
         image = ImageTk.PhotoImage(img)
         for btn in self.buttons:
@@ -87,11 +112,13 @@ class Memorize(Tk):
     def button_pressed(self, obj: Button, title: str, row: int,
                        col: int) -> None:
 
+        # check whether the button pressed is not the button that is already pressed and the button
+        # has not bee selected as a pair(the two identical buttons have been found)
         if (row, col) not in self.pressed_buttons and (row, col) not in self.answers:
             print(title)
             self.add_new_button_info((row, col))
 
-            image = Image.open(f"./assets/{title}")
+            image = Image.open(f"{FOLDER}/{title}")
             image = image.resize((100, 100), Image.ANTIALIAS)
             image = ImageTk.PhotoImage(image)
             obj.config(image=image)
@@ -100,14 +127,20 @@ class Memorize(Tk):
             if not self.first_button_pressed:
                 print("False If")
                 self.first_button_pressed = True
-                self.latest_button = (title, obj)
+                self.latest_button = (title, obj, (row, col))
 
             elif self.first_button_pressed:
+                self.tries += 1
                 self.first_button_pressed = False
                 if title == self.latest_button[0]:
                     self.answers.append((row, col))
-                    # Must be to increase the score or something
-                    print("got it")
+                    self.answers.append(self.latest_button[2])
+
+                    # If we get the pair. then disable the button so that its no longer clickable
+                    obj["state"] = DISABLED
+                    self.latest_button[1]["state"] = DISABLED
+
+                    self.score += 1  # we got a perfect match
 
                 else:
 
@@ -116,20 +149,26 @@ class Memorize(Tk):
                         self.change_to_default_image(self.latest_button[1])
                         self.pressed_buttons.clear()
 
-                    self.after(100, change)
+                    self.after(250, change)
+
+                self.update_tries_and_score()
 
     def add_new_button_info(self, row_col: Tuple[int, int]):
         if not row_col in self.pressed_buttons:
             self.pressed_buttons.append(row_col)
 
     def change_to_default_image(self, obj: Button) -> None:
-        time.sleep(0.5)
-        d_img = Image.open("./assets/crown.png")
+        # time.sleep(0.5)
+        d_img = Image.open(f"{FOLDER}/{DEFAULT_IMAGE}")
         d_img = d_img.resize((100, 100), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(d_img)
 
         obj.config(image=img)
         obj.image = img
+
+    def update_tries_and_score(self):
+        self.tries_label.config(text=f"Tries: {self.tries}")
+        self.score_label.config(text=f"Score: {self.score}")
 
 
 if __name__ == "__main__":
