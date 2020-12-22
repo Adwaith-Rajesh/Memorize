@@ -31,6 +31,7 @@ class Memorize(Tk):
         self.geometry("446x610+500+0")
         self.buttons: Button = []
         self.resizable(False, False)
+        self.iconbitmap(f"{FOLDER}/crown.ico")
 
         # same as the file names for the images
         self.button_titles = get_file_names_of_pics(FOLDER,
