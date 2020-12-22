@@ -181,7 +181,7 @@ class Memorize(Tk):
             self.after(10, self.win_message)
 
     def win_message(self):
-        message = f"Yay !! You won, it took you {self.tries} tries ..\n Would you like to contine"
+        message = f"Yay !! You won, it took you {self.tries} tries ..\n Would you like to continue ?"
 
         yes = askyesno("You Won", message=message)
         if yes:
