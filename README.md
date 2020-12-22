@@ -37,7 +37,7 @@ A simple memory game to kil your time, with sole challenge of getting all the ma
 
   - Using the 64 bit windows executable.
   
-      Download the executable from this link and
+      Download the executable from this [link](https://bit.ly/38vmTVe) and
       extract the file by executing the file and run
       the memorize. exe from within the folder, as
       the all the files required are present in the folder.
