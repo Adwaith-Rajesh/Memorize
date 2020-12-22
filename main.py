@@ -4,13 +4,17 @@ from tkinter.messagebox import askyesno
 from typing import List
 from typing import Tuple
 
-import pyglet
+try:
+    # Allows the user to run the file even on the absence of pyglet.
+    import pyglet
+    pyglet.font.add_file("font/langar.ttf")
+
+except ImportError:
+    pass
 from PIL import Image, ImageTk
 
 from logic import get_file_names_of_pics
 from logic import get_my_name
-
-pyglet.font.add_file("font/langar.ttf")
 
 
 FOLDER = "./assets"  # Path to the folder
@@ -30,7 +34,8 @@ class Memorize(Tk):
 
         # same as the file names for the images
         self.button_titles = get_file_names_of_pics(FOLDER,
-                                                    avoid=[DEFAULT_IMAGE]) * 2
+                                                    avoid=[DEFAULT_IMAGE], extn="png") * 2
+        # print(self.button_titles)
 
         self.pressed_buttons: List[Tuple[int, int]] = []
         self.answers: List[Tuple[int, int]] = []
@@ -112,6 +117,8 @@ class Memorize(Tk):
     # verify the selection
     def button_pressed(self, obj: Button, title: str, row: int,
                        col: int) -> None:
+
+        # print(title)
 
         # check whether the button pressed is not the button that is already pressed and the button
         # has not bee selected as a pair(the two identical buttons have been found)
