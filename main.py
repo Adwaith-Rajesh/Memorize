@@ -1,5 +1,6 @@
 import time
 from tkinter import *
+from tkinter.messagebox import askyesno
 from typing import List
 from typing import Tuple
 
@@ -169,6 +170,21 @@ class Memorize(Tk):
     def update_tries_and_score(self):
         self.tries_label.config(text=f"Tries: {self.tries}")
         self.score_label.config(text=f"Score: {self.score}")
+
+        if self.score == 10:
+            self.after(10, self.win_message)
+
+    def win_message(self):
+        message = "Yay !! You won, it took you {self.tries} tries ..\n Would you like to contine"
+
+        yes = askyesno("You Won", message=message)
+        if yes:
+            self.restart()
+
+    def restart(self):
+        self.quit()
+
+        Memorize().mainloop()
 
 
 if __name__ == "__main__":
