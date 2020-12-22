@@ -1,6 +1,6 @@
 # MEMORIZE
 
-A simple memory game to kil your time, with sole challenge of getting all the matches in the least amount of time.
+A simple memory game to kill your time, with sole challenge of getting all the matches in the least amount of time.
 
 ![snapshot of memorize](./readme/snapshot.png)
 
