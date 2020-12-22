@@ -116,7 +116,6 @@ class Memorize(Tk):
         # check whether the button pressed is not the button that is already pressed and the button
         # has not bee selected as a pair(the two identical buttons have been found)
         if (row, col) not in self.pressed_buttons and (row, col) not in self.answers:
-            print(title)
             self.add_new_button_info((row, col))
 
             image = Image.open(f"{FOLDER}/{title}")
@@ -126,7 +125,6 @@ class Memorize(Tk):
             obj.image = image
 
             if not self.first_button_pressed:
-                print("False If")
                 self.first_button_pressed = True
                 self.latest_button = (title, obj, (row, col))
 
@@ -175,14 +173,19 @@ class Memorize(Tk):
             self.after(10, self.win_message)
 
     def win_message(self):
-        message = "Yay !! You won, it took you {self.tries} tries ..\n Would you like to contine"
+        message = f"Yay !! You won, it took you {self.tries} tries ..\n Would you like to contine"
 
         yes = askyesno("You Won", message=message)
         if yes:
             self.restart()
 
+        else:
+            self.quit()
+            self.destroy()
+
     def restart(self):
         self.quit()
+        self.destroy()
 
         Memorize().mainloop()
 
